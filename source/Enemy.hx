@@ -31,18 +31,13 @@ class Enemy extends FlxSprite
 		else
 		{
 			if (playerY > y)
+			{
 				velocity.y = VEL;
+			}
 			else
+			{
 				velocity.y = -1 * VEL;
-		}
-
-		if ((playerX + 10 > x) && (playerX - 10 < x))
-			velocity.x = 0;
-
-		if ((velocity.x != 0) && (velocity.y != 0))
-		{
-			velocity.x = 0.707 * velocity.x;
-			velocity.y = 0.707 * velocity.y;
+			}
 		}
 	}
 }
