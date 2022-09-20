@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 
 class PlayState extends FlxState
@@ -11,13 +12,10 @@ class PlayState extends FlxState
 	var enemy:Array<Enemy>;
 	var sword:Sword;
 
-	var playerScoreText:FlxText;
-	var enemyScoreText:FlxText;
-	var playerScore:Int;
-	var enemyScore:Int;
-
 	var i:Int; // Iterator variable
 	var ENEMNUM:Int = 2;
+
+	var scorecard:Scorekeeping;
 
 	override public function create()
 	{
@@ -37,12 +35,8 @@ class PlayState extends FlxState
 		add(sword);
 
 		// add UI
-		playerScore = 0;
-		enemyScore = 0;
-		playerScoreText = new FlxText(0, 0, 0, "Player: 0");
-		add(playerScoreText);
-		enemyScoreText = new FlxText(FlxG.width / 2, 0, 0, "Enemy: 0");
-		add(enemyScoreText);
+		scorecard = new Scorekeeping();
+		add(scorecard);
 
 		super.create();
 	}
@@ -56,12 +50,24 @@ class PlayState extends FlxState
 		for (i in 0...enemy.length)
 		{
 			enemy[i].trackPlayer(player.x, player.y);
-			FlxG.collide(player, enemy[i], contactKill);
-			FlxG.collide(enemy[i], sword, contactKill);
+			FlxG.collide(player, enemy[i], playerKilled);
+			FlxG.collide(enemy[i], sword, enemyKilled);
 		}
 	}
 
-	function contactKill(objA:FlxSprite, objB:FlxSprite):Void
+	function playerKilled(objA:FlxSprite, objB:FlxSprite):Void
+	{
+		contactKill(objA);
+		scorecard.updateScore(0, 1);
+	}
+
+	function enemyKilled(objA:FlxSprite, objB:FlxSprite):Void
+	{
+		contactKill(objA);
+		scorecard.updateScore(1, 0);
+	}
+
+	function contactKill(objA:FlxSprite)
 	{
 		//	kill and revive
 		objA.kill();
