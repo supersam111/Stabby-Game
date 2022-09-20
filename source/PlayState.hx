@@ -8,7 +8,7 @@ import flixel.text.FlxText;
 class PlayState extends FlxState
 {
 	var player:Player;
-	var enemy:Enemy;
+	var enemy:Array<Enemy>;
 	var sword:Sword;
 
 	var playerScoreText:FlxText;
@@ -16,13 +16,23 @@ class PlayState extends FlxState
 	var playerScore:Int;
 	var enemyScore:Int;
 
+	var i:Int; // Iterator variable
+	var ENEMNUM:Int = 2;
+
 	override public function create()
 	{
 		// add play pieces
 		player = new Player(50, 50);
 		add(player);
-		enemy = new Enemy(200, 200);
-		add(enemy);
+
+		// Managing multiple enemies
+		enemy = new Array<Enemy>();
+		for (i in 0...ENEMNUM)
+		{
+			enemy[i] = new Enemy(Math.random() * FlxG.width, Math.random() * FlxG.height);
+			add(enemy[i]);
+		}
+
 		sword = new Sword();
 		add(sword);
 
@@ -40,10 +50,15 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		enemy.trackPlayer(player.x, player.y);
 		sword.attack(player);
-		FlxG.collide(player, enemy, contactKill);
-		FlxG.collide(enemy, sword, contactKill);
+
+		// Enemy movement and collision detection
+		for (i in 0...enemy.length)
+		{
+			enemy[i].trackPlayer(player.x, player.y);
+			FlxG.collide(player, enemy[i], contactKill);
+			FlxG.collide(enemy[i], sword, contactKill);
+		}
 	}
 
 	function contactKill(objA:FlxSprite, objB:FlxSprite):Void
